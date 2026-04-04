@@ -15,12 +15,39 @@ struct BankaAppApp: App {
                 deviceId: deviceId
             )
             Task {
-                let profile = try? await APIClient.shared.request(
-                    endpoint: .me,
-                    accessToken: accessToken,
-                    deviceId: deviceId
-                ) as ClientProfile
-                await MainActor.run { AppState.shared.currentUser = profile }
+                do {
+                    let profile: ClientProfile = try await APIClient.shared.request(
+                        endpoint: .me,
+                        accessToken: accessToken,
+                        deviceId: deviceId
+                    )
+                    await MainActor.run { AppState.shared.currentUser = profile }
+                } catch APIError.unauthorized {
+                    do {
+                        let refreshed = try await APIClient.shared.refreshTokens(
+                            refreshToken: refreshToken,
+                            deviceId: deviceId
+                        )
+                        await MainActor.run {
+                            AppState.shared.updateTokens(
+                                accessToken: refreshed.accessToken,
+                                refreshToken: refreshed.refreshToken
+                            )
+                        }
+                        let profile: ClientProfile = try await APIClient.shared.request(
+                            endpoint: .me,
+                            accessToken: refreshed.accessToken,
+                            deviceId: deviceId
+                        )
+                        await MainActor.run { AppState.shared.currentUser = profile }
+                    } catch {
+                        await MainActor.run { AppState.shared.logout() }
+                    }
+                } catch APIError.deviceDeactivated {
+                    await MainActor.run { AppState.shared.logout() }
+                } catch {
+                    // Network error on startup — keep session, user can retry
+                }
             }
         }
     }

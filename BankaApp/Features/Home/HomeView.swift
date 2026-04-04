@@ -5,6 +5,7 @@ struct HomeView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @StateObject private var viewModel: HomeViewModel
     @State private var isMenuOpen: Bool = false
+    @StateObject private var wsManager = WebSocketManager.shared
 
     init() {
         _viewModel = StateObject(wrappedValue: HomeViewModel(appState: AppState.shared))
@@ -49,6 +50,15 @@ struct HomeView: View {
             }
         }
         .task { await viewModel.loadProfile() }
+        .onAppear {
+            if let token = AppState.shared.accessToken,
+               let deviceId = AppState.shared.deviceId {
+                wsManager.connect(accessToken: token, deviceId: deviceId)
+            }
+        }
+        .onDisappear {
+            wsManager.disconnect()
+        }
     }
 }
 
