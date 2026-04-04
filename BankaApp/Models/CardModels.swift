@@ -5,12 +5,12 @@ struct Card: Decodable, Identifiable {
     let cardNumber: String
     let cardType: String
     let cardName: String
-    let brand: String
+    let cardBrand: String
     let createdAt: String
     let expiresAt: String
     let accountNumber: String
     let cvv: String?
-    let limit: Double?
+    let cardLimit: String?
     let status: String
     let ownerName: String?
 

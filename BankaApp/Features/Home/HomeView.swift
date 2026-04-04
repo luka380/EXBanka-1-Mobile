@@ -3,7 +3,6 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var appState: AppState
     @StateObject private var viewModel: HomeViewModel
-    @StateObject private var wsManager = WebSocketManager.shared
 
     init() {
         _viewModel = StateObject(wrappedValue: HomeViewModel(appState: AppState.shared))
@@ -32,7 +31,7 @@ struct HomeView: View {
         .onAppear {
             if let token = AppState.shared.accessToken,
                let deviceId = AppState.shared.deviceId {
-                wsManager.connect(accessToken: token, deviceId: deviceId)
+                WebSocketManager.shared.connect(accessToken: token, deviceId: deviceId)
             }
         }
     }

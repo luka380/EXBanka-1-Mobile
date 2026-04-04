@@ -44,7 +44,7 @@ struct TransactionRowView: View {
             Spacer()
 
             VStack(alignment: .trailing, spacing: 3) {
-                Text(String(format: "%.2f", payment.finalAmount))
+                Text(payment.finalAmount)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.appForeground)
                 Text(payment.status.capitalized)

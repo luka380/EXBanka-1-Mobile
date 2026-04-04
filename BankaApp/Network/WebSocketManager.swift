@@ -11,6 +11,7 @@ final class WebSocketManager: ObservableObject {
     private var webSocketTask: URLSessionWebSocketTask?
     private var reconnectAttempts = 0
     private let maxBackoff: TimeInterval = 30
+    private let maxReconnectAttempts = 5
     private var isIntentionalDisconnect = false
 
     private init() {}
@@ -31,8 +32,6 @@ final class WebSocketManager: ObservableObject {
         webSocketTask = session.webSocketTask(with: url)
         webSocketTask?.resume()
 
-        isConnected = true
-        reconnectAttempts = 0
         receiveMessage()
         schedulePing()
     }
@@ -50,6 +49,10 @@ final class WebSocketManager: ObservableObject {
                 guard let self else { return }
                 switch result {
                 case .success(let message):
+                    if !self.isConnected {
+                        self.isConnected = true
+                        self.reconnectAttempts = 0
+                    }
                     self.handleMessage(message)
                     self.receiveMessage()
                 case .failure:
@@ -85,6 +88,7 @@ final class WebSocketManager: ObservableObject {
         webSocketTask = nil
 
         guard !isIntentionalDisconnect else { return }
+        guard reconnectAttempts < maxReconnectAttempts else { return }
 
         let delay = min(pow(2.0, Double(reconnectAttempts)), maxBackoff)
         reconnectAttempts += 1

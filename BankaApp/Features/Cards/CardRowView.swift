@@ -27,7 +27,7 @@ struct CardRowView: View {
             Spacer()
 
             VStack(alignment: .trailing, spacing: 4) {
-                Text(card.brand)
+                Text(card.cardBrand)
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.appForeground)
@@ -47,7 +47,7 @@ struct CardRowView: View {
     }
 
     private var brandColor: Color {
-        switch card.brand.uppercased() {
+        switch card.cardBrand.uppercased() {
         case "VISA": return .blue
         case "MASTERCARD": return .orange
         case "AMEX": return .green

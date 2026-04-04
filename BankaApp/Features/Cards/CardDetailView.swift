@@ -16,14 +16,14 @@ struct CardDetailView: View {
                         LabeledRow(label: "Card Name", value: card.cardName)
                         LabeledRow(label: "Card Number", value: card.maskedNumber)
                         LabeledRow(label: "Type", value: card.cardType)
-                        LabeledRow(label: "Brand", value: card.brand)
+                        LabeledRow(label: "Brand", value: card.cardBrand)
                         LabeledRow(label: "Expires", value: card.expiryFormatted)
                         LabeledRow(label: "Account", value: card.accountNumber)
                         if let owner = card.ownerName {
                             LabeledRow(label: "Owner", value: owner)
                         }
-                        if let limit = card.limit {
-                            LabeledRow(label: "Limit", value: String(format: "%.2f", limit))
+                        if let limit = card.cardLimit {
+                            LabeledRow(label: "Limit", value: limit)
                         }
                         LabeledRow(label: "Status", value: card.status.capitalized)
 
@@ -63,7 +63,7 @@ struct CardVisual: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.padding) {
             HStack {
-                Text(card.brand)
+                Text(card.cardBrand)
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.white)
                 Spacer()

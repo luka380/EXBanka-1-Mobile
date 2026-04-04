@@ -21,11 +21,13 @@ final class AccountDetailViewModel: ObservableObject {
         defer { isLoading = false }
         do {
             let response: PaymentsResponse = try await APIClient.shared.request(
-                endpoint: .paymentsForAccount(accountNumber: accountNumber),
+                endpoint: .myPayments,
                 accessToken: token,
                 deviceId: appState.deviceId
             )
-            self.payments = response.payments
+            self.payments = response.payments.filter {
+                $0.fromAccountNumber == accountNumber || $0.toAccountNumber == accountNumber
+            }
         } catch {
             errorMessage = error.localizedDescription
         }

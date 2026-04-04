@@ -78,11 +78,11 @@ struct TransferRowView: View {
             Spacer()
 
             VStack(alignment: .trailing, spacing: 3) {
-                Text(String(format: "%.2f", transfer.finalAmount))
+                Text(transfer.finalAmount)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.appForeground)
-                if let rate = transfer.exchangeRate, rate != 1.0 {
-                    Text("Rate: \(String(format: "%.4f", rate))")
+                if let rate = transfer.exchangeRate, rate != "1" && rate != "1.0000" {
+                    Text("Rate: \(rate)")
                         .font(.caption2)
                         .foregroundColor(.appMutedForeground)
                 }
