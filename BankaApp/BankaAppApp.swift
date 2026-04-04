@@ -78,7 +78,7 @@ struct RootView: View {
                 ProgressView()
             }
         case .activated:
-            HomeView()
+            MainTabView()
         case .notActivated:
             ActivationRequestView()
         }
