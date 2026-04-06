@@ -62,7 +62,7 @@ struct AccountHeaderCard: View {
                 .font(.system(size: 13, design: .monospaced))
                 .foregroundColor(.appMutedForeground)
 
-            Text("\(account.balance) \(account.currencyCode)")
+            Text("\(account.formattedBalance) \(account.currencyCode)")
                 .font(.system(size: 36, weight: .bold))
                 .foregroundColor(.appForeground)
 

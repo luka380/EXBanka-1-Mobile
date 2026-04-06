@@ -1,0 +1,7 @@
+1. mobile app doesnt refresh access token automatically, it should refresh access token when its expired using refresh token
+2. loans data has a bug with decoding error: Decode error: data cannot be decoded because its in incorrect format
+3. verifications screen doesnt work, websocket error: Code=-1011 "There was a bad response from the server.", but should work even without ws
+4. should be updated to use v1 api but backend isnt finished doing v1 spec api
+5. portfolio isnt checked if in working state
+6. missing error handling and showing the user correct messages when error happens(for isnance wrong email upon activation )
+7. error: Failed to create 1206x0 image slot (alpha=1 wide=1) (client=0x238c2736) [0x5 (os/kern) failure] in debug console

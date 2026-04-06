@@ -22,14 +22,18 @@ struct AccountRowView: View {
                 Text(account.accountNumber)
                     .font(.caption)
                     .foregroundColor(.appMutedForeground)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
 
             Spacer()
 
             VStack(alignment: .trailing, spacing: 4) {
-                Text("\(account.balance) \(account.currencyCode)")
+                Text("\(account.formattedBalance) \(account.currencyCode)")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundColor(.appForeground)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                 Text(account.status.capitalized)
                     .font(.caption2)
                     .foregroundColor(account.status.lowercased() == "active" ? .green : .appDestructive)

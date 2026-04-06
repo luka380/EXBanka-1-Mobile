@@ -10,6 +10,15 @@ struct BankAccount: Decodable, Identifiable {
     let status: String
     let accountKind: String
     let accountType: String
+    let accountCategory: String?
+    let ownerName: String?
+    let dailyLimit: String?
+    let monthlyLimit: String?
+
+    var formattedBalance: String {
+        guard let value = Double(balance) else { return balance }
+        return String(format: "%.2f", value)
+    }
 }
 
 struct AccountsResponse: Decodable {
