@@ -70,7 +70,6 @@ struct MoreMenuView: View {
     }
 
     private func logout() async {
-        WebSocketManager.shared.disconnect()
         if let token = appState.accessToken, let deviceId = appState.deviceId {
             _ = try? await APIClient.shared.request(
                 endpoint: .mobileDeviceDeactivate,

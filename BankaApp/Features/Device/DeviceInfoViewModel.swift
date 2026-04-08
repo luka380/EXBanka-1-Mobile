@@ -49,7 +49,6 @@ final class DeviceInfoViewModel: ObservableObject {
                 accessToken: token,
                 deviceId: deviceId
             )
-            WebSocketManager.shared.disconnect()
             appState.logout()
         } catch {
             errorMessage = error.localizedDescription
