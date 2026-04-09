@@ -24,8 +24,21 @@ final class ActivationRequestViewModel: ObservableObject {
                 body: ActivationRequest(email: trimmed)
             )
             codeSent = true
+        } catch let apiError as APIError {
+            switch apiError {
+            case .httpError(let statusCode, _):
+                if statusCode == 404 {
+                    errorMessage = "No account found for this email address."
+                } else if statusCode == 400 {
+                    errorMessage = "Please enter a valid email address."
+                } else {
+                    errorMessage = apiError.localizedDescription
+                }
+            default:
+                errorMessage = apiError.localizedDescription
+            }
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = "Unable to connect. Please check your internet connection."
         }
     }
 }

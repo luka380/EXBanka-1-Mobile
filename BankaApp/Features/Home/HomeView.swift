@@ -28,12 +28,7 @@ struct HomeView: View {
         .navigationTitle("Home")
         .navigationBarTitleDisplayMode(.inline)
         .task { await viewModel.loadProfile() }
-        .onAppear {
-            if let token = AppState.shared.accessToken,
-               let deviceId = AppState.shared.deviceId {
-                WebSocketManager.shared.connect(accessToken: token, deviceId: deviceId)
-            }
-        }
+        .onAppear {}
     }
 }
 

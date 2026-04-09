@@ -9,25 +9,13 @@ final class VerificationViewModel: ObservableObject {
     @Published var submitSuccess: Bool = false
 
     private let appState: AppState
-    private let wsManager: WebSocketManager
     private var pollTimer: Timer?
-    private var cancellables = Set<AnyCancellable>()
 
-    init(appState: AppState = .shared, wsManager: WebSocketManager = .shared) {
+    init(appState: AppState = .shared) {
         self.appState = appState
-        self.wsManager = wsManager
-
-        wsManager.$latestChallenge
-            .compactMap { $0 }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] item in
-                self?.addOrUpdateChallenge(item)
-            }
-            .store(in: &cancellables)
     }
 
     func startMonitoring() {
-        connectWebSocket()
         startPolling()
         Task { await fetchPending() }
     }
@@ -70,6 +58,51 @@ final class VerificationViewModel: ObservableObject {
             challengeId: challengeId,
             body: VerificationSubmitRequest(response: String(selectedNumber))
         )
+    }
+
+    func ackVerification(id: Int) async {
+        guard let token = appState.accessToken,
+              let deviceId = appState.deviceId,
+              let secret = KeychainService.loadDeviceSecret() else { return }
+
+        do {
+            let _: VerificationAckResponse = try await APIClient.shared.signedRequest(
+                endpoint: .ackVerification(id: id),
+                accessToken: token,
+                deviceId: deviceId,
+                deviceSecret: secret
+            )
+            removeChallenge(id)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func submitBiometric(challengeId: Int) async {
+        guard let token = appState.accessToken,
+              let deviceId = appState.deviceId,
+              let secret = KeychainService.loadDeviceSecret() else { return }
+
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        do {
+            let response: BiometricVerificationResponse = try await APIClient.shared.signedRequest(
+                endpoint: .biometricVerification(challengeId: challengeId),
+                accessToken: token,
+                deviceId: deviceId,
+                deviceSecret: secret
+            )
+            if response.success {
+                removeChallenge(challengeId)
+                submitSuccess = true
+            } else {
+                errorMessage = "Biometric verification failed."
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 
     func submitQrToken(challengeId: Int, token: String) async {
@@ -157,16 +190,9 @@ final class VerificationViewModel: ObservableObject {
         }
     }
 
-    private func connectWebSocket() {
-        guard let token = appState.accessToken,
-              let deviceId = appState.deviceId else { return }
-        wsManager.connect(accessToken: token, deviceId: deviceId)
-    }
-
     private func startPolling() {
         pollTimer?.invalidate()
-        let interval: TimeInterval = wsManager.isConnected ? 30 : 2
-        pollTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+        pollTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 await self?.fetchPending()
             }

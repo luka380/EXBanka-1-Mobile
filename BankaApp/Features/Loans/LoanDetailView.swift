@@ -21,12 +21,18 @@ struct LoanDetailView: View {
                             LabeledRow(label: "Loan Number", value: num)
                         }
                         LabeledRow(label: "Amount", value: "\(String(format: "%.2f", loan.amount)) \(loan.currencyCode ?? "RSD")")
-                        LabeledRow(label: "Interest Rate", value: "\(String(format: "%.2f", loan.interestRate))%")
+                        if let nominal = loan.nominalInterestRate {
+                            LabeledRow(label: "Nominal Interest Rate", value: "\(String(format: "%.2f", nominal))%")
+                        }
+                        if let effective = loan.effectiveInterestRate {
+                            LabeledRow(label: "Effective Interest Rate", value: "\(String(format: "%.2f", effective))%")
+                        }
                         if let interestType = loan.interestType {
                             LabeledRow(label: "Interest Type", value: interestType)
                         }
-                        LabeledRow(label: "Period", value: "\(loan.period) months")
-                        LabeledRow(label: "Monthly Installment", value: String(format: "%.2f", loan.installmentAmount))
+                        if let period = loan.repaymentPeriod {
+                            LabeledRow(label: "Repayment Period", value: "\(period) months")
+                        }
                         if let remaining = loan.remainingDebt {
                             LabeledRow(label: "Remaining Debt", value: String(format: "%.2f", remaining))
                         }

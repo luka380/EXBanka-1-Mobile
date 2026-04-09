@@ -43,6 +43,7 @@ struct MoreMenuView: View {
 
                         MoreMenuSection(title: "Security") {
                             MoreMenuLink(icon: "checkmark.shield.fill", label: "Verification", destination: VerificationView())
+                            MoreMenuLink(icon: "bell.fill", label: "Notifications", destination: NotificationsView())
                             MoreMenuLink(icon: "iphone", label: "Device", destination: DeviceInfoView())
                         }
 
@@ -70,7 +71,6 @@ struct MoreMenuView: View {
     }
 
     private func logout() async {
-        WebSocketManager.shared.disconnect()
         if let token = appState.accessToken, let deviceId = appState.deviceId {
             _ = try? await APIClient.shared.request(
                 endpoint: .mobileDeviceDeactivate,

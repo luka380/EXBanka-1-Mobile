@@ -64,7 +64,22 @@ actor APIClient {
             request.httpBody = try encoder.encode(body)
         }
 
-        return try await execute(request: request)
+        do {
+            return try await execute(request: request)
+        } catch APIError.unauthorized {
+            // Attempt automatic token refresh
+            guard let deviceId,
+                  let refreshToken = await MainActor.run(body: { AppState.shared.refreshToken }) else {
+                throw APIError.unauthorized
+            }
+            let refreshed = try await refreshTokens(refreshToken: refreshToken, deviceId: deviceId)
+            await MainActor.run {
+                AppState.shared.updateTokens(accessToken: refreshed.accessToken, refreshToken: refreshed.refreshToken)
+            }
+            // Retry with the new token
+            request.setValue("Bearer \(refreshed.accessToken)", forHTTPHeaderField: "Authorization")
+            return try await execute(request: request)
+        }
     }
 
     // MARK: - Signed request (for verification endpoints)
@@ -104,7 +119,30 @@ actor APIClient {
         request.setValue(headers.signature, forHTTPHeaderField: "X-Device-Signature")
         request.httpBody = bodyData
 
-        return try await execute(request: request)
+        do {
+            return try await execute(request: request)
+        } catch APIError.unauthorized {
+            // Attempt automatic token refresh
+            guard let refreshToken = await MainActor.run(body: { AppState.shared.refreshToken }) else {
+                throw APIError.unauthorized
+            }
+            let refreshed = try await refreshTokens(refreshToken: refreshToken, deviceId: deviceId)
+            await MainActor.run {
+                AppState.shared.updateTokens(accessToken: refreshed.accessToken, refreshToken: refreshed.refreshToken)
+            }
+            // Re-sign and retry with the new token
+            let newHeaders = RequestSigner.sign(
+                method: endpoint.method,
+                path: endpoint.path,
+                body: bodyData,
+                deviceId: deviceId,
+                deviceSecret: deviceSecret
+            )
+            request.setValue("Bearer \(refreshed.accessToken)", forHTTPHeaderField: "Authorization")
+            request.setValue(newHeaders.timestamp, forHTTPHeaderField: "X-Device-Timestamp")
+            request.setValue(newHeaders.signature, forHTTPHeaderField: "X-Device-Signature")
+            return try await execute(request: request)
+        }
     }
 
     // MARK: - Token refresh

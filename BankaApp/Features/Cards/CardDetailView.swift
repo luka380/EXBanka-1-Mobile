@@ -105,6 +105,7 @@ struct CardVisual: View {
             )
         )
         .cornerRadius(AppTheme.cornerRadius * 1.4)
+        .drawingGroup()
         .shadow(color: Color.appPrimary.opacity(0.3), radius: 12, x: 0, y: 6)
         .overlay(
             RoundedRectangle(cornerRadius: AppTheme.cornerRadius * 1.4)
