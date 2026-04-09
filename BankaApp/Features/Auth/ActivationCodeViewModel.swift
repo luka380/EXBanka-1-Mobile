@@ -48,8 +48,23 @@ final class ActivationCodeViewModel: ObservableObject {
                 deviceId: response.deviceId
             )
             appState.currentUser = profile
+        } catch let apiError as APIError {
+            switch apiError {
+            case .httpError(let statusCode, _):
+                if statusCode == 409 {
+                    errorMessage = "Invalid or expired activation code. Please request a new one."
+                } else if statusCode == 404 {
+                    errorMessage = "No account found for this email address."
+                } else if statusCode == 400 {
+                    errorMessage = "Invalid code format. Please enter a 6-digit code."
+                } else {
+                    errorMessage = apiError.localizedDescription
+                }
+            default:
+                errorMessage = apiError.localizedDescription
+            }
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = "Unable to connect. Please check your internet connection."
         }
     }
 }

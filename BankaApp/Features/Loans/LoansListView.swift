@@ -65,7 +65,7 @@ struct LoanRowView: View {
             Spacer()
 
             VStack(alignment: .trailing, spacing: 4) {
-                Text("\(String(format: "%.1f", loan.interestRate))%")
+                Text("\(String(format: "%.1f", loan.displayInterestRate))%")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundColor(.appForeground)
                 Text(loan.status.replacingOccurrences(of: "_", with: " ").capitalized)

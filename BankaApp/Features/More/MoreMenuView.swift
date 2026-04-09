@@ -43,6 +43,7 @@ struct MoreMenuView: View {
 
                         MoreMenuSection(title: "Security") {
                             MoreMenuLink(icon: "checkmark.shield.fill", label: "Verification", destination: VerificationView())
+                            MoreMenuLink(icon: "bell.fill", label: "Notifications", destination: NotificationsView())
                             MoreMenuLink(icon: "iphone", label: "Device", destination: DeviceInfoView())
                         }
 

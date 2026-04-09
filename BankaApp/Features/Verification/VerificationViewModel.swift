@@ -60,6 +60,51 @@ final class VerificationViewModel: ObservableObject {
         )
     }
 
+    func ackVerification(id: Int) async {
+        guard let token = appState.accessToken,
+              let deviceId = appState.deviceId,
+              let secret = KeychainService.loadDeviceSecret() else { return }
+
+        do {
+            let _: VerificationAckResponse = try await APIClient.shared.signedRequest(
+                endpoint: .ackVerification(id: id),
+                accessToken: token,
+                deviceId: deviceId,
+                deviceSecret: secret
+            )
+            removeChallenge(id)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func submitBiometric(challengeId: Int) async {
+        guard let token = appState.accessToken,
+              let deviceId = appState.deviceId,
+              let secret = KeychainService.loadDeviceSecret() else { return }
+
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        do {
+            let response: BiometricVerificationResponse = try await APIClient.shared.signedRequest(
+                endpoint: .biometricVerification(challengeId: challengeId),
+                accessToken: token,
+                deviceId: deviceId,
+                deviceSecret: secret
+            )
+            if response.success {
+                removeChallenge(challengeId)
+                submitSuccess = true
+            } else {
+                errorMessage = "Biometric verification failed."
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func submitQrToken(challengeId: Int, token: String) async {
         guard let accessToken = appState.accessToken,
               let deviceId = appState.deviceId,

@@ -23,10 +23,19 @@ enum Endpoint {
     // Verification
     case pendingVerifications
     case submitVerification(challengeId: Int)
+    case ackVerification(id: Int)
+    case biometricVerification(challengeId: Int)
     case qrVerify(challengeId: Int)
 
-    // WebSocket
-    case mobileWebSocket
+    // Biometric Settings
+    case setBiometrics
+    case getBiometrics
+
+    // Notifications
+    case notifications
+    case notificationUnreadCount
+    case markNotificationRead(id: Int)
+    case markAllNotificationsRead
 
     // Client read-only views
     case myAccountDetail(id: Int)
@@ -77,11 +86,25 @@ enum Endpoint {
             return "\(Endpoint.baseURL)/api/mobile/verifications/pending"
         case .submitVerification(let id):
             return "\(Endpoint.baseURL)/api/mobile/verifications/\(id)/submit"
+        case .ackVerification(let id):
+            return "\(Endpoint.baseURL)/api/v1/mobile/verifications/\(id)/ack"
+        case .biometricVerification(let id):
+            return "\(Endpoint.baseURL)/api/v1/mobile/verifications/\(id)/biometric"
         case .qrVerify(let id):
             return "\(Endpoint.baseURL)/api/verify/\(id)"
 
-        case .mobileWebSocket:
-            return "ws://localhost:8080/ws/mobile"
+        case .setBiometrics, .getBiometrics:
+            return "\(Endpoint.baseURL)/api/v1/mobile/device/biometrics"
+
+        case .notifications:
+            return "\(Endpoint.baseURL)/api/v1/me/notifications"
+        case .notificationUnreadCount:
+            return "\(Endpoint.baseURL)/api/v1/me/notifications/unread-count"
+        case .markNotificationRead(let id):
+            return "\(Endpoint.baseURL)/api/v1/me/notifications/\(id)/read"
+        case .markAllNotificationsRead:
+            return "\(Endpoint.baseURL)/api/v1/me/notifications/read-all"
+
         case .myAccountDetail(let id):
             return "\(Endpoint.baseURL)/api/me/accounts/\(id)"
         case .myCards:
@@ -132,8 +155,14 @@ enum Endpoint {
         case .mobileDeviceTransfer: return "/api/mobile/device/transfer"
         case .pendingVerifications: return "/api/mobile/verifications/pending"
         case .submitVerification(let id): return "/api/mobile/verifications/\(id)/submit"
+        case .ackVerification(let id): return "/api/v1/mobile/verifications/\(id)/ack"
+        case .biometricVerification(let id): return "/api/v1/mobile/verifications/\(id)/biometric"
         case .qrVerify(let id): return "/api/verify/\(id)"
-        case .mobileWebSocket: return "/ws/mobile"
+        case .setBiometrics, .getBiometrics: return "/api/v1/mobile/device/biometrics"
+        case .notifications: return "/api/v1/me/notifications"
+        case .notificationUnreadCount: return "/api/v1/me/notifications/unread-count"
+        case .markNotificationRead(let id): return "/api/v1/me/notifications/\(id)/read"
+        case .markAllNotificationsRead: return "/api/v1/me/notifications/read-all"
         case .myAccountDetail(let id): return "/api/me/accounts/\(id)"
         case .myCards: return "/api/me/cards"
         case .myCardDetail(let id): return "/api/me/cards/\(id)"
@@ -157,7 +186,9 @@ enum Endpoint {
         case .login, .logout,
              .mobileRequestActivation, .mobileActivate, .mobileRefresh,
              .mobileDeviceDeactivate, .mobileDeviceTransfer,
-             .submitVerification, .qrVerify:
+             .submitVerification, .ackVerification, .biometricVerification, .qrVerify,
+             .setBiometrics,
+             .markNotificationRead, .markAllNotificationsRead:
             return "POST"
         default:
             return "GET"

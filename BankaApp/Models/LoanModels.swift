@@ -6,12 +6,10 @@ struct Loan: Decodable, Identifiable {
     let loanType: String
     let accountNumber: String?
     let amount: Double
-    let interestRate: Double
+    let repaymentPeriod: Int?
     let nominalInterestRate: Double?
     let effectiveInterestRate: Double?
     let interestType: String?
-    let period: Int
-    let installmentAmount: Double
     let contractDate: String?
     let maturityDate: String?
     let nextInstallmentAmount: Double?
@@ -21,13 +19,19 @@ struct Loan: Decodable, Identifiable {
     let status: String
     let createdAt: String?
 
+    var displayInterestRate: Double {
+        nominalInterestRate ?? effectiveInterestRate ?? 0
+    }
+
     var loanTypeLabel: String {
         switch loanType.uppercased() {
         case "CASH": return "Cash Loan"
-        case "HOUSING": return "Housing Loan"
+        case "PERSONAL": return "Personal Loan"
+        case "HOUSING", "MORTGAGE": return "Housing Loan"
         case "AUTO": return "Auto Loan"
         case "REFINANCING": return "Refinancing"
         case "STUDENT": return "Student Loan"
+        case "BUSINESS": return "Business Loan"
         default: return loanType
         }
     }

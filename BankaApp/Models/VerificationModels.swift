@@ -68,21 +68,23 @@ struct VerificationSubmitResponse: Decodable {
     let remainingAttempts: Int?
 }
 
-// WebSocket message
-struct WebSocketVerificationMessage: Decodable {
-    let type: String
-    let challengeId: Int
-    let method: VerificationMethod
-    let displayData: String
-    let expiresAt: String
-
-    func toPendingItem(id: Int = 0) -> PendingVerificationItem {
-        PendingVerificationItem(
-            id: id,
-            challengeId: challengeId,
-            method: method,
-            displayData: displayData,
-            expiresAt: expiresAt
-        )
-    }
+// POST /api/v1/mobile/verifications/:id/ack
+struct VerificationAckResponse: Decodable {
+    let success: Bool
 }
+
+// POST /api/v1/mobile/verifications/:id/biometric
+struct BiometricVerificationResponse: Decodable {
+    let success: Bool
+}
+
+// POST /api/v1/mobile/device/biometrics
+struct BiometricSettingRequest: Encodable {
+    let enabled: Bool
+}
+
+// GET /api/v1/mobile/device/biometrics
+struct BiometricStatusResponse: Decodable {
+    let enabled: Bool
+}
+
