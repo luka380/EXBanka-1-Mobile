@@ -57,7 +57,7 @@ struct PendingVerificationsResponse: Decodable {
     let items: [PendingVerificationItem]
 }
 
-// POST /api/mobile/verifications/:challenge_id/submit
+// POST /api/v1/mobile/verifications/:challenge_id/submit
 struct VerificationSubmitRequest: Encodable {
     let response: String
 }

@@ -91,6 +91,8 @@ struct NotificationRow: View {
                         .font(.system(size: 13))
                         .foregroundColor(.appMutedForeground)
                         .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
                     if let date = notification.creationDate {
                         Text(date, style: .relative)

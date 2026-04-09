@@ -1,6 +1,6 @@
 import Foundation
 
-// POST /api/mobile/auth/request-activation
+// POST /api/v1/mobile/auth/request-activation
 struct ActivationRequest: Encodable {
     let email: String
 }
@@ -10,7 +10,7 @@ struct ActivationRequestResponse: Decodable {
     let message: String
 }
 
-// POST /api/mobile/auth/activate
+// POST /api/v1/mobile/auth/activate
 struct ActivateDeviceRequest: Encodable {
     let email: String
     let code: String
@@ -24,7 +24,7 @@ struct ActivateDeviceResponse: Decodable {
     let deviceSecret: String
 }
 
-// POST /api/mobile/auth/refresh
+// POST /api/v1/mobile/auth/refresh
 struct MobileRefreshRequest: Encodable {
     let refreshToken: String
 }
